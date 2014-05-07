@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+
+<title>BMFont Generator</title>
+
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="css/custom.css">
+
+</head>
+
+<body>
+	<div class="container">
+
+		<div class="jumbotron" id="jumbotron">
+			<h1>fontcutter</h1>						
+			<p class="lead">A small tool to create angelcode <a href="http://www.angelcode.com/products/bmfont/doc/file_format.html">fnt files</a>, when you already have a <a href="https://www.google.com/search?q=bitmap+font+image">bitmap font image</a>, for using it into Unity, libGDX and plenty other game engines.</p>
+			<p>
+				<input type="file" id="imageLoader" name="imageLoader" class="filestyle" data-classButton="btn btn-primary" data-input="false" data-buttonText=" Open an image" data-classIcon="glyphicon glyphicon-folder-open"/>
+			</p>
+		</div>
+		
+		<div id="canvas-container">
+			<canvas id="imageCanvas"></canvas>
+		</div>
+
+		<div class="col-lg-6">
+			
+		</div>
+	</div>
+
+
+	</div> <!-- /container -->
+
+	<script src="js/jquery-1.11.1.min.js"></script>	
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-filestyle.min.js"></script>		
+	<script src="js/fontcutter.js"></script>
+	
+</body>
+
+</html>
