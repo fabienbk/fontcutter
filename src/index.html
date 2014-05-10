@@ -3,7 +3,7 @@
 <head>
 <meta charset="ISO-8859-1">
 
-<title>BMFont Generator</title>
+<title>fontcutter</title>
 
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/bootstrap-theme.min.css">
@@ -22,12 +22,40 @@
 			</p>
 		</div>
 		
-		<div id="canvas-container">
+		<div id="canvas-container" style="display:none;">
 			<canvas id="imageCanvas"></canvas>
 		</div>
 
-		<div class="col-lg-6">
-			
+		<div class="panel panel-primary">
+			<div class="panel-heading">General Settings</div>
+			<div class="panel-body">
+
+				<div>
+				<label for="width">Width </label>
+				<input name="width" type="number" min="1" step="1" /> 
+				<label for="height">Height </label>
+				<input type="number" min="1" step="1" /> 
+				</div>
+				
+				<div>
+				<label for="linenumber">Number of lines</label>
+				<input id="linenumber" name="linenumber" type="number" min="1" step="1" value="2" />
+				
+				<table class="table" id="lineTable">
+				<thead>
+					<tr>
+						<th>Line</th>
+						<th>List of glyphs</th>
+					</tr>
+				</thead>
+				<tbody>					
+				</tbody>
+  				</table>
+								
+				</div>
+				
+				
+			</div>
 		</div>
 	</div>
 
@@ -38,6 +66,7 @@
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/bootstrap-filestyle.min.js"></script>		
 	<script src="js/fontcutter.js"></script>
+	<script lang="javascript">new CanvasManager('imageCanvas');</script>
 	
 </body>
 
