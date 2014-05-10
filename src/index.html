@@ -22,9 +22,9 @@
 			</p>
 		</div>
 		
-		<div id="canvas-container" style="display:none;">
+		<div id="canvas-container" style="display:none;"></div>
 			<canvas id="imageCanvas"></canvas>
-		</div>
+		<!-- </div> -->
 
 		<div class="panel panel-primary">
 			<div class="panel-heading">General Settings</div>
@@ -66,7 +66,7 @@
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/bootstrap-filestyle.min.js"></script>		
 	<script src="js/fontcutter.js"></script>
-	<script lang="javascript">new CanvasManager('imageCanvas');</script>
+	<script lang="javascript">new CanvasManager('imageCanvas', 'canvas-container');</script>
 	
 </body>
 
