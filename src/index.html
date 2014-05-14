@@ -16,8 +16,8 @@
 				<a class="navbar-brand" href="#">FontCutter</a>
 			</div>
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="#">Home</a></li>
-
+				
+				<form class="navbar-form navbar-left" role="search"><input type="file" id="imageLoader" name="imageLoader" class="filestyle" data-classButton="btn btn-success" data-input="false" data-buttonText=" Open an image" data-classIcon="glyphicon glyphicon-folder-open"></form>
 			</ul>
 		</div>
 
@@ -26,14 +26,11 @@
 			
 			<div id="jumbotext">
 				<h1>FontCutter</h1>						
-				<p class="lead">A small tool to create angelcode <a href="http://www.angelcode.com/products/bmfont/doc/file_format.html">fnt files</a>, when you already have a <a href="https://www.google.com/search?q=bitmap+font+image">bitmap font image</a>, for using it into Unity, libGDX and plenty other game engines.</p>
-				<p>
-					<input type="file" id="imageLoader" name="imageLoader" class="filestyle" data-classButton="btn btn-default" data-input="false" data-buttonText=" Open an image" data-classIcon="glyphicon glyphicon-folder-open"/>
-				</p>
+				<p class="lead">A small tool to create angelcode <a href="http://www.angelcode.com/products/bmfont/doc/file_format.html">fnt files</a>, when you already have a <a href="https://www.google.com/search?q=bitmap+font+image">bitmap font image</a>, for using it into Unity, libGDX and plenty other game engines.</p>				
 			</div>
 		</div>
 
-		<div id="canvas-container" style="display:none;">
+		<div id="canvas-container" style="display:none;" class="text-center">
 			<canvas id="imageCanvas"></canvas>
 		</div> 
 		
@@ -89,7 +86,7 @@
 					<tbody>					
 						<tr ng-repeat="line in lineData">
 							<td width="20"><span>{{line.line}}</span></td>
-							<td><input class="form-control" type="text" value="{{line.glyphs}}"/></td>
+							<td><input class="form-control" type="text" value="{{line.glyphs}}" ng-model="line.glyphs"/></td>
 						</tr>
 					</tbody>
 				</table>			
@@ -102,10 +99,11 @@
 			</div>
 
 			<div id="outputTab" class="tab-pane">
-				<textarea name="output" id="output">
-					
+				<textarea name="output" id="output" class="form-control">					
 				</textarea>
 			</div> 
+
+			<input type="button" class="btn btn-default" id="drawImage" value="draw"/>
 
 		</div><!-- /tabContent -->
 
@@ -119,8 +117,6 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.8/angular.min.js"></script>		
 	<script src="js/fontcutter.js"></script>
-
-	<script lang="javascript">new CanvasManager('imageCanvas', 'canvas-container');</script>
 </body>
 
 </html>

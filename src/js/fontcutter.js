@@ -1,8 +1,11 @@
+/* The bitmap being loaded */
+
 var fontcutterApp = angular.module('fontcutterApp', []);
+var image = new Image();
 
 fontcutterApp.controller('fontcutterCtrl', function ($scope) { 
-  $scope.charWidth = 8;
-  $scope.charHeight = 8;
+  $scope.charWidth = 32;
+  $scope.charHeight = 32;
   $scope.topPadding = 0;
   $scope.leftPadding = 0;
   $scope.bottomPadding = 0;
@@ -25,19 +28,79 @@ fontcutterApp.controller('fontcutterCtrl', function ($scope) {
         }
     }    
   }
+
+  var properties = ["charWidth", "charHeight", "topPadding", "bottomPadding", "leftPadding", "rightPadding"];
+  for (var i = properties.length - 1; i >= 0; i--) {
+    $scope.$watch(properties[i], function() { canvasManager.refreshCanvas(); });
+  }
+
+  // watch deep change in array
+  $scope.$watch(
+    function() { 
+      var result;
+      for (var i = 0; i < $scope.lineData.length; i++) {
+        result += $scope.lineData[i].glyphs;
+      }
+      return result;    
+    }, 
+    function() { canvasManager.refreshCanvas(); });
+   
 });
 
-
-function CanvasManager(canvasId, canvasContainerId) {
-	this.canvas = document.getElementById(canvasId);
+function CanvasManager() {
+  this.canvasId = 'imageCanvas';
+  this.canvasContainerId = 'canvas-container',
+	this.canvas = document.getElementById(this.canvasId);
 	this.ctx = this.canvas.getContext('2d');
-  this.canvasContainer = document.getElementById(canvasContainerId);
+  this.canvasContainer = document.getElementById(this.canvasContainerId);
     
 	var imageLoader = document.getElementById('imageLoader');
 	imageLoader.addEventListener('change', this.handleImage.bind(this), false);	
+
+
+  document.getElementById('drawImage').addEventListener('click', this.drawImage.bind(this), false); 
 }
 
-var img = new Image();
+CanvasManager.prototype.drawImage = function() {  
+  this.ctx.drawImage(image, 0, 0);
+}
+
+CanvasManager.prototype.refreshCanvas = function() {
+  var angularScope = angular.element($("#body")).scope();
+
+  this.ctx.beginPath();
+  this.ctx.clearRect (0, 0, image.width, image.height);
+  this.ctx.drawImage(image, 0, 0);
+    
+  var i = 0;
+  var origX = 0;
+  var origY = 0;
+  var glyphsNumber = 0;
+  for (i = 0; i < angularScope.lineData.length; i++) {
+    var lineData = angularScope.lineData[i];
+    origX = 0;    
+    origY = i * angularScope.charHeight;
+    glyphsNumber = lineData.glyphs.length;
+
+    this.line(origX, origY, glyphsNumber * angularScope.charWidth, origY, "#aaa");
+
+    for (var j = 0; j < glyphsNumber + 1; j++) {    
+      this.line(origX + j * angularScope.charWidth, origY, origX + j * angularScope.charWidth, origY + angularScope.charHeight, "#aaa");
+    };
+  };
+  
+  origY = (i+1) * angularScope.charHeight;  
+  this.line(0, origY, glyphsNumber * angularScope.charWidth, origY, "#aaa");
+
+};
+
+CanvasManager.prototype.line = function(sx, sy, ex, ey, style) {
+    this.ctx.beginPath();
+    this.ctx.strokeStyle = style;
+    this.ctx.moveTo(sx + 0.5, sy + 0.5);
+    this.ctx.lineTo(ex + 0.5, ey + 0.5);
+    this.ctx.stroke();
+}
 
 CanvasManager.prototype.handleImage = function(e) {
         var reader = new FileReader();
@@ -45,15 +108,15 @@ CanvasManager.prototype.handleImage = function(e) {
         var me = this;
 
         reader.onload = function(event) {
-            img.onload = function() {
+            image.onload = function() {
                 $('#jumbotron').hide();
                 $('#canvas-container').show();
-                me.canvas.width = img.width;
-                me.canvas.height = img.height;
-                me.ctx.drawImage(img, 0, 0);
+                me.canvas.width = image.width;
+                me.canvas.height = image.height;
+                me.refreshCanvas();
             };
 
-            img.src = event.target.result;
+            image.src = event.target.result;
         };
 
         reader.readAsDataURL(e.target.files[0]);
@@ -86,14 +149,17 @@ function generatePreview() {
       var canvasId = "canvas_"+i+"_"+j;
       var canvas = document.getElementById(canvasId);
       var ctx = canvas.getContext('2d');
-      //context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
+      //context.drawImage(image,sx,sy,swidth,sheight,x,y,width,height);
       var sx = j*$scope.charWidth;
       var sy = i*$scope.charHeight;
 
-      ctx.drawImage(img,sx,sy,$scope.charWidth,$scope.charHeight,0,0,$scope.charWidth,$scope.charHeight);
+      ctx.drawImage(image,sx,sy,$scope.charWidth,$scope.charHeight,0,0,$scope.charWidth,$scope.charHeight);
     }
   }
 
 
-
 }
+
+
+var canvasManager = new CanvasManager();
+

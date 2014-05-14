@@ -15,8 +15,13 @@
 	filter: alpha(opacity=0);
 }
 
+#imageCanvas {
+	border: 1px solid black;	
+}
+
 #canvas-container {
-	border: 1px solid light-gray;
+	margin-top: 5px;
+	margin-bottom: 15px;  	
 }
 
 .row-padded {
@@ -29,5 +34,5 @@
 }
 
 .preview-canvas {
-	border:1px solid light-gray;
+	border:1px solid black;
 }
