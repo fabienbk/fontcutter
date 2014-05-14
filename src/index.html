@@ -1,73 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="fontcutterApp" lang="en">
 <head>
-<meta charset="ISO-8859-1">
-
-<title>fontcutter</title>
-
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/bootstrap-theme.min.css">
-<link rel="stylesheet" href="css/custom.css">
-
+	<meta charset="ISO-8859-1">
+	<title>fontcutter</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">	
+	<link rel="stylesheet" href="css/custom.css">
 </head>
 
-<body>
+<body id="body" ng-controller="fontcutterCtrl">
 	<div class="container">
 
-		<div class="jumbotron" id="jumbotron">
-			<h1>fontcutter</h1>						
-			<p class="lead">A small tool to create angelcode <a href="http://www.angelcode.com/products/bmfont/doc/file_format.html">fnt files</a>, when you already have a <a href="https://www.google.com/search?q=bitmap+font+image">bitmap font image</a>, for using it into Unity, libGDX and plenty other game engines.</p>
-			<p>
-				<input type="file" id="imageLoader" name="imageLoader" class="filestyle" data-classButton="btn btn-primary" data-input="false" data-buttonText=" Open an image" data-classIcon="glyphicon glyphicon-folder-open"/>
-			</p>
+		<!-- ***************************************** Nav Bar ***************************************** -->
+		<div class="navbar navbar-default">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">FontCutter</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="#">Home</a></li>
+
+			</ul>
 		</div>
-		
-		<div id="canvas-container" style="display:none;"></div>
-			<canvas id="imageCanvas"></canvas>
-		<!-- </div> -->
 
-		<div class="panel panel-primary">
-			<div class="panel-heading">General Settings</div>
-			<div class="panel-body">
-
-				<div>
-				<label for="width">Width </label>
-				<input name="width" type="number" min="1" step="1" /> 
-				<label for="height">Height </label>
-				<input type="number" min="1" step="1" /> 
-				</div>
-				
-				<div>
-				<label for="linenumber">Number of lines</label>
-				<input id="linenumber" name="linenumber" type="number" min="1" step="1" value="2" />
-				
-				<table class="table" id="lineTable">
-				<thead>
-					<tr>
-						<th>Line</th>
-						<th>List of glyphs</th>
-					</tr>
-				</thead>
-				<tbody>					
-				</tbody>
-  				</table>
-								
-				</div>
-				
-				
+		<!-- ***************************************** Jumbotron ***************************************** -->
+		<div class="jumbotron text-center" id="jumbotron">
+			
+			<div id="jumbotext">
+				<h1>FontCutter</h1>						
+				<p class="lead">A small tool to create angelcode <a href="http://www.angelcode.com/products/bmfont/doc/file_format.html">fnt files</a>, when you already have a <a href="https://www.google.com/search?q=bitmap+font+image">bitmap font image</a>, for using it into Unity, libGDX and plenty other game engines.</p>
+				<p>
+					<input type="file" id="imageLoader" name="imageLoader" class="filestyle" data-classButton="btn btn-default" data-input="false" data-buttonText=" Open an image" data-classIcon="glyphicon glyphicon-folder-open"/>
+				</p>
 			</div>
 		</div>
+
+		<div id="canvas-container" style="display:none;">
+			<canvas id="imageCanvas"></canvas>
+		</div> 
+		
+		<ul class="nav nav-pills"  id="tabs" >
+			<li class="active"><a href="#fixedFontTab" data-toggle="tab">Font Settings</a></li>
+			<li><a href="#previewTab" data-toggle="tab" onclick="generatePreview();">Preview</a></li>
+			<li><a href="#outputTab" data-toggle="tab">Ouput</a></li>
+		</ul>
+
+
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div id="fixedFontTab" class="tab-pane active"> 
+				<div class="row row-padded">
+					<div class="col-xs-1">
+						<label for="width">Char Width </label>
+						<input class="form-control" name="width" type="number" min="1" step="1" ng-model="charWidth" /> 
+					</div>
+					<div class="col-xs-1">
+						<label for="height">Char Height </label>
+						<input class="form-control" type="number" min="1" step="1"  ng-model="charHeight" /> 				
+					</div>
+					<div class="col-xs-1">
+						<label for="linenumber">Text Lines</label>
+						<input class="form-control" id="linenumber" ng-model="lineNumber" type="number" min="1" step="1" value="2" ng-change="onLineNumberChange()" />
+					</div>
+
+					<div class="col-xs-1">
+						<label for="height">Top Padding </label>
+						<input class="form-control" type="number" min="0" step="1"  ng-model="topPadding" /> 				
+					</div>
+					<div class="col-xs-1">
+						<label for="height">Bottom Padding </label>
+						<input class="form-control" type="number" min="0" step="1"  ng-model="bottomPadding" /> 				
+					</div>
+					<div class="col-xs-1">
+						<label for="height">Left Padding </label>
+						<input class="form-control" type="number" min="0" step="1"  ng-model="leftPadding" /> 				
+					</div>
+					<div class="col-xs-1">
+						<label for="height">Right Padding </label>
+						<input class="form-control" type="number" min="0" step="1"  ng-model="rightPadding" /> 				
+					</div>
+				</div>
+				
+				<table class="table" id="lineTable">
+					<thead>
+						<tr>
+							<th>Line</th>
+							<th>List of glyphs</th>
+						</tr>
+					</thead>
+					<tbody>					
+						<tr ng-repeat="line in lineData">
+							<td width="20"><span>{{line.line}}</span></td>
+							<td><input class="form-control" type="text" value="{{line.glyphs}}"/></td>
+						</tr>
+					</tbody>
+				</table>			
+				
+			</div>
+
+			<div id="previewTab" class="tab-pane">				
+				<table class="table" id="previewTable">					
+				</table>
+			</div>
+
+			<div id="outputTab" class="tab-pane">
+				<textarea name="output" id="output">
+					
+				</textarea>
+			</div> 
+
+		</div><!-- /tabContent -->
+
 	</div>
 
-
-	</div> <!-- /container -->
 
 	<script src="js/jquery-1.11.1.min.js"></script>	
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/bootstrap-filestyle.min.js"></script>		
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.8/angular.min.js"></script>		
 	<script src="js/fontcutter.js"></script>
+
 	<script lang="javascript">new CanvasManager('imageCanvas', 'canvas-container');</script>
-	
 </body>
 
 </html>

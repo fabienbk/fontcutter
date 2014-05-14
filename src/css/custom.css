@@ -14,3 +14,20 @@
 	opacity: 0;
 	filter: alpha(opacity=0);
 }
+
+#canvas-container {
+	border: 1px solid light-gray;
+}
+
+.row-padded {
+  padding-top: 5px;  
+  padding-bottom: 15px;  
+}
+
+.label-small  {
+	font-size: 12px;	
+}
+
+.preview-canvas {
+	border:1px solid light-gray;
+}

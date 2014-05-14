@@ -1,16 +1,43 @@
+var fontcutterApp = angular.module('fontcutterApp', []);
+
+fontcutterApp.controller('fontcutterCtrl', function ($scope) { 
+  $scope.charWidth = 8;
+  $scope.charHeight = 8;
+  $scope.topPadding = 0;
+  $scope.leftPadding = 0;
+  $scope.bottomPadding = 0;
+  $scope.rightPadding = 0;
+
+  $scope.lineData = [
+    {'line': 1, 'glyphs' : "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },     
+    {'line': 2, 'glyphs' : "abcdefghijklmnopqrstuvwxyz" },     
+    {'line': 3, 'glyphs' : "0123456789" },     
+  ];
+  $scope.lineNumber = $scope.lineData.length;
+
+  $scope.onLineNumberChange = function() {
+    if ($scope.lineNumber < $scope.lineData.length) {
+        $scope.lineData.splice($scope.lineNumber, $scope.lineData.length - $scope.lineNumber + 1);            
+    }
+    else if ($scope.lineNumber > $scope.lineData.length) {
+        for (var i = 0; i < ($scope.lineNumber - $scope.lineData.length); i++) {
+            $scope.lineData.push({'line' : $scope.lineData.length + 1, 'glyphs' : ''});
+        }
+    }    
+  }
+});
+
+
 function CanvasManager(canvasId, canvasContainerId) {
 	this.canvas = document.getElementById(canvasId);
 	this.ctx = this.canvas.getContext('2d');
-    this.canvasContainer = document.getElementById(canvasContainerId);
-    this.lineTable = new LineTable($('#linenumber').val(), $('#lineTable'));
-
+  this.canvasContainer = document.getElementById(canvasContainerId);
+    
 	var imageLoader = document.getElementById('imageLoader');
-	imageLoader.addEventListener('change', this.handleImage.bind(this), false);
-
-	var lineNumberField = document.getElementById('linenumber');
-	lineNumberField.addEventListener('change', this.onLineNumberChange.bind(this), false);
+	imageLoader.addEventListener('change', this.handleImage.bind(this), false);	
 }
 
+var img = new Image();
 
 CanvasManager.prototype.handleImage = function(e) {
         var reader = new FileReader();
@@ -18,9 +45,9 @@ CanvasManager.prototype.handleImage = function(e) {
         var me = this;
 
         reader.onload = function(event) {
-            var img = new Image();
-
             img.onload = function() {
+                $('#jumbotron').hide();
+                $('#canvas-container').show();
                 me.canvas.width = img.width;
                 me.canvas.height = img.height;
                 me.ctx.drawImage(img, 0, 0);
@@ -30,50 +57,43 @@ CanvasManager.prototype.handleImage = function(e) {
         };
 
         reader.readAsDataURL(e.target.files[0]);
+        $('#canvas-container').show();
     };
 
-CanvasManager.prototype.onLineNumberChange = function(event) {
-        var newLineNumber = $('#linenumber').val();
-        alert(newLineNumber + " and table ");
-        if (newLineNumber > this.lineTable.lineArray.length) {
-            this.lineTable.addLines(newLineNumber - this.lineTable.lineArray.length);
-        } else if (newLineNumber < this.lineTable.lineArray.length) {
-            this.lineTable.removeLines(this.lineTable.lineArray.length - newLineNumber);
-        }
-    };
+function generatePreview() {
+  var $scope = angular.element($("#body")).scope();
+  
+  var canvasArray = [];
 
-/**
- * Line table
- */
-function LineDefinition(index, definition) {
-	this.index = index;
-	this.definition = definition;
+  var table = $('#previewTable');
+  table.empty();
+  var content = "";
+  for (var i = 0; i < $scope.lineData.length; i++) {
+    content += "<tr>";
+    var lineDataEntry = $scope.lineData[i];
+    for (var j = 0; j < lineDataEntry.glyphs.length; j++) {
+      var canvasId = "canvas_"+i+"_"+j;
+      content += "<td><canvas class='preview-canvas' id='"+canvasId+"' width='"+$scope.charWidth+"' height='"+$scope.charHeight+"' /></td>";
+    }
+    content += "</tr>";
+  }
+
+  table.append(content);
+
+  for (var i = 0; i < $scope.lineData.length; i++) {
+    var lineDataEntry = $scope.lineData[i];
+    for (var j = 0; j < lineDataEntry.glyphs.length; j++) {
+      var canvasId = "canvas_"+i+"_"+j;
+      var canvas = document.getElementById(canvasId);
+      var ctx = canvas.getContext('2d');
+      //context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
+      var sx = j*$scope.charWidth;
+      var sy = i*$scope.charHeight;
+
+      ctx.drawImage(img,sx,sy,$scope.charWidth,$scope.charHeight,0,0,$scope.charWidth,$scope.charHeight);
+    }
+  }
+
+
+
 }
-
-LineDefinition.prototype.toHTML = function() {
-	return "<tr><td>" + this.index + "</td><td><input type='text' name='glyphLine' value='ABCDEF'/></td></tr>";
-};
-
-function LineTable(lineNumber, jqueryObj) {
-	this.lineArray = [];
-    this.jqueryObj = jqueryObj;
-	this.addLines(lineNumber);
-}
-
-LineTable.prototype.addLines = function(number) {
-    alert("add " + number + "lines");
-	for (var i = 0; i < number; i++) {
-		var newIndex = this.lineArray.length;
-        this.lineArray[newIndex] = lineDef;
-		var lineDef = new LineDefinition(newIndex, "");
-		
-		this.jqueryObj.append(lineDef.toHTML());
-	}
-};
-
-LineTable.prototype.removeLines = function(number) {
-        alert("remove to " + number + "lines");
-	this.lineArray.length = number;
-
-    // remove lines in jquery
-};
