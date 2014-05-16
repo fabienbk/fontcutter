@@ -35,4 +35,6 @@
 
 .preview-canvas {
 	border:1px solid black;
-}
+
+
+textarea { resize:vertical; }

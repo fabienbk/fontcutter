@@ -2,6 +2,7 @@
 
 var fontcutterApp = angular.module('fontcutterApp', []);
 var image = new Image();
+var fileName = "";
 
 fontcutterApp.controller('fontcutterCtrl', function ($scope) { 
   $scope.charWidth = 32;
@@ -29,9 +30,9 @@ fontcutterApp.controller('fontcutterCtrl', function ($scope) {
     }    
   }
 
-  var properties = ["charWidth", "charHeight", "topPadding", "bottomPadding", "leftPadding", "rightPadding"];
+  var properties = ["lineNumber", "charWidth", "charHeight", "topPadding", "bottomPadding", "leftPadding", "rightPadding"];
   for (var i = properties.length - 1; i >= 0; i--) {
-    $scope.$watch(properties[i], function() { canvasManager.refreshCanvas(); });
+    $scope.$watch(properties[i], function() { canvasManager.refresh(); });
   }
 
   // watch deep change in array
@@ -43,7 +44,7 @@ fontcutterApp.controller('fontcutterCtrl', function ($scope) {
       }
       return result;    
     }, 
-    function() { canvasManager.refreshCanvas(); });
+    function() { canvasManager.refresh(); });
    
 });
 
@@ -56,14 +57,42 @@ function CanvasManager() {
     
 	var imageLoader = document.getElementById('imageLoader');
 	imageLoader.addEventListener('change', this.handleImage.bind(this), false);	
-
-
-  document.getElementById('drawImage').addEventListener('click', this.drawImage.bind(this), false); 
 }
 
-CanvasManager.prototype.drawImage = function() {  
-  this.ctx.drawImage(image, 0, 0);
+CanvasManager.prototype.refresh = function() {
+  if (fileName != "") {    
+    this.refreshCanvas();
+    generatePreview();
+    generateOutput();
+  }
 }
+
+CanvasManager.prototype.handleImage = function(e) {
+        var reader = new FileReader();
+        var canvasContainerId = this.canvasContainerId;
+        var me = this;
+
+        reader.onload = function(event) {
+            image.onload = function() {
+                $('#jumbotron').hide();
+                $('#canvas-container').show();
+                me.canvas.width = image.width;
+                me.canvas.height = image.height;
+                me.refreshCanvas();
+
+                $('.nav li.disabled').find("a").attr("data-toggle", "tab");
+                $('.nav li.disabled').removeClass('disabled');
+
+            };
+
+            image.src = event.target.result;
+        };
+
+        fileName = e.target.files[0];
+        reader.readAsDataURL(fileName);
+        $('#canvas-container').show();
+    };
+
 
 CanvasManager.prototype.refreshCanvas = function() {
   var angularScope = angular.element($("#body")).scope();
@@ -102,27 +131,6 @@ CanvasManager.prototype.line = function(sx, sy, ex, ey, style) {
     this.ctx.stroke();
 }
 
-CanvasManager.prototype.handleImage = function(e) {
-        var reader = new FileReader();
-        var canvasContainerId = this.canvasContainerId;
-        var me = this;
-
-        reader.onload = function(event) {
-            image.onload = function() {
-                $('#jumbotron').hide();
-                $('#canvas-container').show();
-                me.canvas.width = image.width;
-                me.canvas.height = image.height;
-                me.refreshCanvas();
-            };
-
-            image.src = event.target.result;
-        };
-
-        reader.readAsDataURL(e.target.files[0]);
-        $('#canvas-container').show();
-    };
-
 function generatePreview() {
   var $scope = angular.element($("#body")).scope();
   
@@ -136,7 +144,7 @@ function generatePreview() {
     var lineDataEntry = $scope.lineData[i];
     for (var j = 0; j < lineDataEntry.glyphs.length; j++) {
       var canvasId = "canvas_"+i+"_"+j;
-      content += "<td><canvas class='preview-canvas' id='"+canvasId+"' width='"+$scope.charWidth+"' height='"+$scope.charHeight+"' /></td>";
+      content += "<td><div>"+lineDataEntry.glyphs[j]+"</div><canvas class='preview-canvas' id='"+canvasId+"' width='"+$scope.charWidth+"' height='"+$scope.charHeight+"' /></td>";
     }
     content += "</tr>";
   }
@@ -161,5 +169,47 @@ function generatePreview() {
 }
 
 
+function generateOutput() {
+  var $scope = angular.element($("#body")).scope();
+  var output = "";
+  var EOL = "\n";
+
+  //padding for each character (up, right, down, left).
+  var padding = [$scope.topPadding, $scope.rightPadding, $scope.bottomPadding, $scope.leftPadding].join();
+
+  var count = 0;
+  for (var i = 0; i <  $scope.lineData.length; i++) {
+    count += $scope.lineData[i].glyphs.length;
+  };
+    
+
+  output += "info face=\""+fileName.name+"\" size="+$scope.charWidth+" bold=0 italic=0 charset=\"\" unicode=1 stretchH=100 smooth=1 aa=1 padding="+padding+" spacing=1,1 outline=0"+EOL;
+  output += "common lineHeight=32 base=25 scaleW="+image.width+" scaleH="+image.height+" pages=1 packed=0 alphaChnl=1 redChnl=0 greenChnl=0 blueChnl=0"+EOL;
+  output += "page id=0 file=\""+fileName.name+"\""+EOL;
+  output += "chars count="+count+EOL;
+
+  for(var line=0; line < $scope.lineData.length; line++) {
+    for (var i = 0; i < $scope.lineData[line].glyphs.length; i++) {
+      var character = $scope.lineData[line].glyphs[i];      
+      var width = $scope.charWidth;
+      var height = $scope.charHeight;
+      var x = i*width;
+      var y = line*height;      
+      output += "char id="+character.charCodeAt(0)+"   x="+x+"    y="+y+"     width="+width+"    height="+height+" xoffset=0     yoffset=0     xadvance="+width+"    page=0  chnl=0"+EOL;
+    }   
+  }
+
+  $('#output').val(output);
+}
+
+
 var canvasManager = new CanvasManager();
 
+
+
+$(document).ready(function() {
+    /*disable non active tabs*/
+    $('.nav li').not('.active').addClass('disabled');
+/*to actually disable clicking the bootstrap tab, as noticed in comments by user3067524*/
+    $('.nav li').not('.active').find('a').removeAttr("data-toggle");    
+});
