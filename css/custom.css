@@ -35,6 +35,10 @@
 
 .preview-canvas {
 	border:1px solid black;
+}
 
+.ssba {
+	width: 32px;	
+}
 
 textarea { resize:vertical; }
