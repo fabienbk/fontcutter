@@ -1,7 +1,7 @@
 FontCutter
 ==========
 
-I've created a small HTML5 tool (FontCutter) to easily generate Angel Code Font files (documentation here) for fixed-sized font sheets. This format is used in many game frameworks, like libgdx and several Unity3D plugins, and probably many many other ones.
+I've created a small HTML5 tool ([FontCutter](http://fontcutter.fbksoft.com)) to easily generate Angel Code Font files (documentation here) for fixed-sized font sheets. This format is used in many game frameworks, like libgdx and several Unity3D plugins, and probably many many other ones.
 
 Most tools available allow you to generate these descriptors by rasterizing true type fonts (like Hiero or Bitmap Font Generator), but I couldn't find any simple way to quickly generate this file, when you start with an existing bitmap sheet.
 
