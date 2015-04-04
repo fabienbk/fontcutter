@@ -5,6 +5,7 @@ var image = new Image();
 var fileName = "";
 
 fontcutterApp.controller('fontcutterCtrl', function ($scope) { 
+  $scope.outputXML = false;
   $scope.charWidth = 32;
   $scope.charHeight = 32;
   $scope.topPadding = 0;
@@ -30,7 +31,7 @@ fontcutterApp.controller('fontcutterCtrl', function ($scope) {
     }    
   }
 
-  var properties = ["lineNumber", "charWidth", "charHeight", "topPadding", "bottomPadding", "leftPadding", "rightPadding"];
+  var properties = ["outputXML", "lineNumber", "charWidth", "charHeight", "topPadding", "bottomPadding", "leftPadding", "rightPadding"];
   for (var i = properties.length - 1; i >= 0; i--) {
     $scope.$watch(properties[i], function() { canvasManager.refresh(); });
   }
@@ -164,13 +165,55 @@ function generatePreview() {
       ctx.drawImage(image,sx,sy,$scope.charWidth,$scope.charHeight,0,0,$scope.charWidth,$scope.charHeight);
     }
   }
-
-
 }
 
+function  generateOutput() {
+  var scope = angular.element($("#body")).scope();
+  if (scope.outputXML) {
+    generateXMLOutput(scope);
+  } else {
+    generateFNTOutput(scope);
+  }
+}
 
-function generateOutput() {
-  var $scope = angular.element($("#body")).scope();
+function generateXMLOutput($scope) {
+  var EOL = "\n";
+  var output = '<?xml version="1.0"?>'+EOL;
+
+  //padding for each character (up, right, down, left).
+  var padding = [$scope.topPadding, $scope.rightPadding, $scope.bottomPadding, $scope.leftPadding].join();
+
+  var count = 0;
+  for (var i = 0; i <  $scope.lineData.length; i++) {
+    count += $scope.lineData[i].glyphs.length;
+  };
+
+  output += '<font>'+EOL;
+  output += '<info face="'+fileName.name+'" size="'+$scope.charWidth+'" bold="0" italic="0" charset="" unicode="1" stretchH="100" smooth="1" aa="1" padding="'+padding+'" spacing="1,1" outline="0" />'+EOL;
+  output += '<common lineHeight="32" base="25" scaleW="'+image.width+'" scaleH="'+image.height+'" pages="1" packed="0" alphaChnl="1" redChnl="0" greenChnl="0" blueChnl="0" />'+EOL;
+  output += '<pages>'+EOL;
+  output += '<page id="0" file="'+fileName.name+'" />'+EOL;
+  output += '</pages>'+EOL;
+  output += '<chars count="'+count+'">'+EOL;
+
+  for(var line=0; line < $scope.lineData.length; line++) {
+    for (var i = 0; i < $scope.lineData[line].glyphs.length; i++) {
+      var character = $scope.lineData[line].glyphs[i];      
+      var width = $scope.charWidth;
+      var height = $scope.charHeight;
+      var x = i*width;
+      var y = line*height;      
+      output += '<char id="'+character.charCodeAt(0)+'"   x="'+x+'"    y="'+y+'"     width="'+width+'"    height="'+height+'" xoffset="0"     yoffset="0"     xadvance="'+width+'"    page="0"  chnl="0" />'+EOL;
+    }   
+  }
+
+  output += '</chars>'+EOL;
+  output += '</font>';
+
+  $('#output').val(output);
+}
+
+function generateFNTOutput($scope) {
   var output = "";
   var EOL = "\n";
 
