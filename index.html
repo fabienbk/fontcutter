@@ -59,6 +59,16 @@
 			<div id="fixedFontTab" class="tab-pane active"> 
 				<div class="row row-padded">
 					<div class="col-xs-1">
+						<label for="output-fnt">FNT Output</label>
+						<input type="radio" name="outputType" ng-model="outputXML" ng-value="false" />
+					</div>
+					<div class="col-xs-1">
+						<label for="output-xml">XML Output</label>
+						<input type="radio" name="outputType" ng-model="outputXML" ng-value="true" />
+					</div>
+				</div>
+				<div class="row row-padded">
+					<div class="col-xs-1">
 						<label for="width">Char Width </label>
 						<input class="form-control" name="width" type="number" min="1" step="1" ng-model="charWidth" /> 
 					</div>
