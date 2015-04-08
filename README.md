@@ -1,7 +1,7 @@
 FontCutter
 ==========
 
-A small HTML5 tool (hosted here: http://fontcutter.fbksoft.com) to easily generate Angel Code Font files (format [documentation here](http://www.angelcode.com/products/bmfont/doc/file_format.html)) for fixed-sized font sheets. This format is used in many game frameworks, like libgdx and several Unity3D plugins, and probably many many other ones.
+A small HTML5 tool (hosted here: http://fontcutter.fbksoft.com for convenience, but you can just open index.html offline) to easily generate Angel Code Font files (format [documentation here](http://www.angelcode.com/products/bmfont/doc/file_format.html)) for fixed-sized font sheets. This format is used in many game frameworks, like libgdx and several Unity3D plugins, and probably many many other ones.
 
 ![screenshot](http://fbksoft.com/wp-content/uploads/2014/05/Sans-titre-1024x494.png)
 
