@@ -191,7 +191,7 @@ function generateXMLOutput($scope) {
 
   output += '<font>'+EOL;
   output += TAB + '<info face="'+fileName.name+'" size="'+$scope.charWidth+'" bold="0" italic="0" charset="" unicode="1" stretchH="100" smooth="1" aa="1" padding="'+padding+'" spacing="1,1" outline="0" />'+EOL;
-  output += TAB + '<common lineHeight="32" base="25" scaleW="'+image.width+'" scaleH="'+image.height+'" pages="1" packed="0" alphaChnl="1" redChnl="0" greenChnl="0" blueChnl="0" />'+EOL;
+  output += TAB + '<common lineHeight="'+$scope.charHeight+'" base="'+$scope.charHeight+'" scaleW="'+image.width+'" scaleH="'+image.height+'" pages="1" packed="0" alphaChnl="1" redChnl="0" greenChnl="0" blueChnl="0" />'+EOL;
   output += TAB + '<pages>'+EOL;
   output += TAB + TAB + '<page id="0" file="'+fileName.name+'" />'+EOL;
   output += TAB + '</pages>'+EOL;
@@ -228,7 +228,7 @@ function generateFNTOutput($scope) {
     
 
   output += "info face=\""+fileName.name+"\" size="+$scope.charWidth+" bold=0 italic=0 charset=\"\" unicode=1 stretchH=100 smooth=1 aa=1 padding="+padding+" spacing=1,1 outline=0"+EOL;
-  output += "common lineHeight=32 base=25 scaleW="+image.width+" scaleH="+image.height+" pages=1 packed=0 alphaChnl=1 redChnl=0 greenChnl=0 blueChnl=0"+EOL;
+  output += "common lineHeight="+$scope.charHeight+" base="+$scope.charHeight+" scaleW="+image.width+" scaleH="+image.height+" pages=1 packed=0 alphaChnl=1 redChnl=0 greenChnl=0 blueChnl=0"+EOL;
   output += "page id=0 file=\""+fileName.name+"\""+EOL;
   output += "chars count="+count+EOL;
 
